@@ -1,5 +1,8 @@
 const uploadFile = require("../middleware/upload");
 const fs = require("fs");
+const path = require('path');
+const pdf = require('pdf-poppler');
+
 let baseUrl = 'http://localhost:8080/files/';
 
 const upload = async (req, res) => {
@@ -13,6 +16,25 @@ const upload = async (req, res) => {
     res.status(200).send({
       message: "Uploaded the file successfully: " + req.file.originalname,
     });
+    //console.log(req.file);
+    if(req.file.mimetype === 'application/pdf') {
+      let opts = {
+        format: 'png',
+        out_dir: path.dirname(req.file.path),
+        out_prefix: path.basename(req.file.path, path.extname(req.file.path)),
+        page: null
+      }
+
+      pdf.convert(req.file.path, opts)
+        .then(res => {
+            console.log('Successfully converted');
+            //delete file
+            //fs.rm(req.file.path);            
+        })
+        .catch(error => {
+            console.error(error);
+        })
+    }
   } catch (err) {
     console.log(err);      
     if (err.code == "LIMIT_FILE_SIZE") {
