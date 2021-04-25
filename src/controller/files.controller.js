@@ -28,7 +28,7 @@ const upload = async (req, res) => {
     }
 
     const prediction = await predict(
-      await fs.promises.readFile(req.file.path.replace(".pdf", ".png"))
+      await fs.promises.readFile(req.file.path.replace(".pdf", "-1.png"))
     );
 
     res.status(200).send({

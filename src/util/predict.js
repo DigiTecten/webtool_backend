@@ -102,7 +102,7 @@ async function predictCroppedImage(file) {
 }
 
 module.exports = async function predictFullImage(path) {
-  const boxSizes = 4000;
+  const boxSizes = 2000;
   const overflow = 100;
 
   const image = sharp(path);
