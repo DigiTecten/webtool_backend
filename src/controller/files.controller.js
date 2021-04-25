@@ -1,9 +1,10 @@
 const uploadFile = require("../middleware/upload");
 const fs = require("fs");
-const path = require('path');
-const pdf = require('pdf-poppler');
+const path = require("path");
+const pdf = require("pdf-poppler");
+const predict = require("../util/predict");
 
-let baseUrl = 'http://localhost:8080/files/';
+let baseUrl = "http://localhost:8080/files/";
 
 const upload = async (req, res) => {
   try {
@@ -13,36 +14,34 @@ const upload = async (req, res) => {
       return res.status(400).send({ message: "Please upload a file!" });
     }
 
-    res.status(200).send({
-      message: "Uploaded the file successfully: " + req.file.originalname,
-      name: req.file.originalname
-    });
     //console.log(req.file);
-    if(req.file.mimetype === 'application/pdf') {
+    if (req.file.mimetype === "application/pdf") {
       let opts = {
-        format: 'png',
+        format: "png",
         out_dir: path.dirname(req.file.path),
         out_prefix: path.basename(req.file.path, path.extname(req.file.path)),
         scale: 4096,
-        page: null
-      }
+        page: null,
+      };
 
-      pdf.convert(req.file.path, opts)
-        .then(res => {
-            console.log('Successfully converted');
-            //delete file
-            //fs.rm(req.file.path);            
-        })
-        .catch(error => {
-            console.error(error);
-        })
+      const stored = await pdf.convert(req.file.path, opts);
     }
+
+    const prediction = await predict(
+      await fs.promises.readFile(req.file.path.replace(".pdf", ".png"))
+    );
+
+    res.status(200).send({
+      message: "Uploaded the file successfully: " + req.file.originalname,
+      name: req.file.originalname,
+      prediction,
+    });
   } catch (err) {
-    console.log(err);      
+    console.log(err);
     if (err.code == "LIMIT_FILE_SIZE") {
-        return res.status(500).send({
-            message: "File size cannot be larger than 5MB!",
-        });
+      return res.status(500).send({
+        message: "File size cannot be larger than 5MB!",
+      });
     }
     res.status(500).send({
       message: `Could not upload the file: ${req.file.originalname}. ${err}`,
@@ -63,7 +62,7 @@ const getListFiles = (req, res) => {
     let fileInfos = [];
 
     files.forEach((file) => {
-      if(file !== '.gitkeep'){
+      if (file !== ".gitkeep") {
         fileInfos.push({
           name: file,
           url: baseUrl + file,
@@ -99,5 +98,5 @@ module.exports = {
   upload,
   getListFiles,
   download,
-  serve
+  serve,
 };

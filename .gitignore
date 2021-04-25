@@ -1,3 +1,4 @@
 /node_modules/
 /resources/static/assets/uploads/*
 .DS_Store
+.env
