@@ -1,4 +1,6 @@
 const uploadFile = require("../middleware/upload");
+const fs = require("fs");
+let baseUrl = 'http://localhost:8080/files/';
 
 const upload = async (req, res) => {
   try {
@@ -37,10 +39,12 @@ const getListFiles = (req, res) => {
     let fileInfos = [];
 
     files.forEach((file) => {
-      fileInfos.push({
-        name: file,
-        url: baseUrl + file,
-      });
+      if(file !== '.gitkeep'){
+        fileInfos.push({
+          name: file,
+          url: baseUrl + file,
+        });
+      }
     });
 
     res.status(200).send(fileInfos);
