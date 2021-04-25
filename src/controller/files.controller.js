@@ -22,6 +22,7 @@ const upload = async (req, res) => {
         format: 'png',
         out_dir: path.dirname(req.file.path),
         out_prefix: path.basename(req.file.path, path.extname(req.file.path)),
+        scale: 4096,
         page: null
       }
 
