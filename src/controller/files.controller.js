@@ -15,6 +15,7 @@ const upload = async (req, res) => {
 
     res.status(200).send({
       message: "Uploaded the file successfully: " + req.file.originalname,
+      name: req.file.originalname
     });
     //console.log(req.file);
     if(req.file.mimetype === 'application/pdf') {
@@ -86,8 +87,16 @@ const download = (req, res) => {
   });
 };
 
+const serve = (req, res) => {
+  const fileName = req.params.name;
+  const directoryPath = __basedir + "/resources/static/assets/uploads/";
+  console.log("serving file:", directoryPath + fileName);
+  res.sendfile(directoryPath + fileName);
+};
+
 module.exports = {
   upload,
   getListFiles,
   download,
+  serve
 };

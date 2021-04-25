@@ -13,14 +13,14 @@ app.use(cors(corsOptions));
 
 const initRoutes = require("./src/routes");
 
+//app.use('static', express.static(__dirname + '/resources/static/uploads'));
 app.use(express.urlencoded({ extended: true }));
 initRoutes(app);
 
 app.listen(port, () => {
   console.log(`Running at localhost:${port}`);
-})
+});
 /*
-app.use(express.static('public'));
 
 app.get('*', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'public', 'index.html'));
